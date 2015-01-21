@@ -1,2 +1,1 @@
-<?=$data['list']?>
-
+ <?=$data['list']?>;

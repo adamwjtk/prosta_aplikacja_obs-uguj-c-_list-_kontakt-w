@@ -7,5 +7,5 @@ interface Idbconn
 	const PW ="3zHbK4SyvSv2m8ua";
 	const DBNAME = "kontakty_netPC";
 	
-	public function doConnect();
+	//public function doConnect();
 }
