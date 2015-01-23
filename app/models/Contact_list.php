@@ -11,6 +11,13 @@ class Contact_list implements Idbconn
     protected $connection = null;
     protected $tableContact = "`lista_kontaktow`";
     
+    public $id;
+    public $name;
+    public $surname;
+    public $mail;
+    public $phone_num;
+    public $birth_date;
+    
     public function __construct() 
     {
         try
@@ -24,6 +31,35 @@ class Contact_list implements Idbconn
                 print_r('catch '.$e);
         }       
     }
+    
+    public function addContactRecord($name = '', $surname = '', $mail = '',
+            $phone_num = '', $birth_date = '')
+    {
+ 
+        $this->name = $name;
+        $this->surname = $surname;
+        $this->mail = filter_var($mail, FILTER_VALIDATE_EMAIL);
+        $this->phone_num = $phone_num;
+        $this->birth_date = date("Y-m-d", strtotime($birth_date));
+        $sql = "INSERT INTO $this->tableContact (`name`, `surname`, `mail`, `phone_num`, `birth_date`)"
+                . "VALUES (?,?,?,?,?)";
+        try 
+        {
+            $pdo = $this->connection->prepare($sql);
+            $pdo->bindParam(1, $this->name, PDO::PARAM_STR,50);
+            $pdo->bindParam(2, $this->surname, PDO::PARAM_STR,80);
+            $pdo->bindParam(3, $this->mail, PDO::PARAM_STR, 150);
+            $pdo->bindParam(4, $this->phone_num, PDO::PARAM_INT);
+            $pdo->bindParam(5, $this->birth_date);
+
+            $pdo->execute();
+        } catch (PDOException $exc) 
+        {
+            echo $exc;
+        }
+            
+        
+    }   
 
     public function showList ()
     {
@@ -43,6 +79,7 @@ class Contact_list implements Idbconn
             print_r($ex);
         }
         $this->_toJson($this->contact_json);
+        return $this->contact_json;
     }
     protected function _toJson($data)
     {
@@ -51,8 +88,5 @@ class Contact_list implements Idbconn
         exit(json_encode($data, JSON_FORCE_OBJECT));
         //echo json_last_error();
     }
-    public function updateRecord()
-    {
-        
-    }
+
 }
